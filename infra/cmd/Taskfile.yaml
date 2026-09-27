@@ -1,0 +1,58 @@
+version: '3'
+
+tasks:
+  frontend:
+    dir: '../../frontend'
+    cmds:
+      - go tool templ generate --watch --cmd="go run main.go"
+
+  tailwind:
+    dir: '../../frontend/tailwind'
+    cmds:
+      - npx @tailwindcss/cli -i ./input.css -o ./dist/tailwind.css --watch
+
+  caddy:
+    dir: '../../infra/caddy'
+    cmds:
+      - caddy run --config Caddyfile.dev
+
+  dev:
+    deps:
+      - frontend
+      - tailwind
+      - caddy
+    env:
+      APP_ENV: dev
+
+  init:
+    desc: Install all dependencies and prepare project for development
+    cmds:
+      - task: init:go
+      - task: init:tailwind
+      - task: generate:templ
+      - task: build:tailwind
+      - echo "Init complete! You can now run 'task dev'."
+
+  init:go:
+    desc: Download Go modules
+    dir: '../../frontend'
+    cmds:
+      - go mod download
+
+  init:tailwind:
+    desc: Install Tailwind CLI and dependencies
+    dir: '../../frontend/tailwind'
+    cmds:
+      - npm install
+
+  generate:templ:
+    desc: Generate Go code from Templ templates
+    dir: '../../frontend'
+    cmds:
+      - go tool templ generate
+
+  build:tailwind:
+    desc: Initial Tailwind CSS build
+    dir: '../../frontend/tailwind'
+    cmds:
+      - npx @tailwindcss/cli -i ./input.css -o ./dist/tailwind.css

@@ -1,0 +1,24 @@
+package pages
+
+import "company.anyway/app"
+import "company.anyway/utils"
+
+func init(){
+    app.GetInstance().Router.GET("/", utils.Render(landing()))
+}
+
+templ landing(){
+	<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Anyway company | Websites com uma cara</title>
+
+        <link href="/tailwind.css" rel="stylesheet">
+    </head>
+    <body class="min-h-[100dvh] h-fit bg-red-500">
+        
+    </body>
+    </html>    
+}

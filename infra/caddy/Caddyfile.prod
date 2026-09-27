@@ -1,0 +1,23 @@
+{
+    auto_https off
+}
+
+:80 {
+    handle_path /static/* {
+        root * /app/static
+        file_server
+    }
+
+    @tailwind {
+        path /tailwind.css
+    }
+
+    handle @tailwind {
+        root * /app/tailwind/dist
+        file_server
+    }
+
+    handle {
+        reverse_proxy anyway-frontend:8081
+    }
+}

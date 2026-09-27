@@ -1,0 +1,36 @@
+name: anyway
+
+services:
+  anyway-frontend:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
+    environment:
+      APP_ENV: ${APP_ENV}
+    networks:
+      - anyway-net
+    restart: unless-stopped
+
+  anyway-infra:
+    build:
+      context: ../../
+      dockerfile: infra/caddy/Dockerfile
+    depends_on:
+      - anyway-frontend
+    networks:
+      - anyway-net
+    restart: unless-stopped
+
+  anyway-tunnel:
+    image: cloudflare/cloudflared:latest
+    command: tunnel run --url http://infra:80
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - anyway-infra
+    networks:
+      - anyway-net
+    restart: unless-stopped
+
+networks:
+  anyway-net:
